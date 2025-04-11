@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { InsightType } from '@/types/insight';
 import { cn } from '@/lib/utils';
+import { EngagementFilter } from './InsightFilters';
 
 interface InsightCardProps {
   insight: InsightType;
@@ -10,6 +11,17 @@ interface InsightCardProps {
 }
 
 const InsightCard: React.FC<InsightCardProps> = ({ insight, className }) => {
+  // Function to determine engagement level based on some logic
+  // This is a mock implementation since we don't have actual engagement metrics
+  const getEngagementLevel = (insight: InsightType): EngagementFilter => {
+    // In a real app, this would use actual engagement metrics
+    // For demonstration, we'll randomly assign engagement levels based on the insight id
+    const id = parseInt(insight.id) || 0;
+    if (id % 3 === 0) return 'high';
+    if (id % 3 === 1) return 'medium';
+    return 'low';
+  };
+
   const getSentimentColor = (sentiment: string) => {
     switch (sentiment) {
       case 'positive':
@@ -21,8 +33,14 @@ const InsightCard: React.FC<InsightCardProps> = ({ insight, className }) => {
     }
   };
 
+  // Add a data attribute for engagement level to make filtering easier
   return (
-    <Card className={cn("overflow-hidden", className)}>
+    <Card 
+      className={cn("overflow-hidden", className)}
+      data-engagement={getEngagementLevel(insight)}
+      data-sentiment={insight.sentiment}
+      data-date={insight.timestamp}
+    >
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <CardTitle className="text-base">{insight.title}</CardTitle>

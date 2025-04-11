@@ -10,6 +10,11 @@ import { InsightDataType } from '@/types/insight';
 import InsightCharts from './InsightCharts';
 import DashboardCharts from './DashboardCharts';
 import PlatformSection from '../insights/PlatformSection';
+import InsightFilters, { 
+  SentimentFilter, 
+  EngagementFilter, 
+  DateRangeFilter 
+} from '../insights/InsightFilters';
 
 interface InsightTabsProps {
   data: InsightDataType | null;
@@ -19,6 +24,14 @@ interface InsightTabsProps {
 const InsightTabs: React.FC<InsightTabsProps> = ({ data, selectedPlatforms }) => {
   const [activeTab, setActiveTab] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  
+  // Filter state
+  const [sentimentFilter, setSentimentFilter] = useState<SentimentFilter>('all');
+  const [engagementFilter, setEngagementFilter] = useState<EngagementFilter>('all');
+  const [dateRangeFilter, setDateRangeFilter] = useState<DateRangeFilter>({
+    startDate: undefined,
+    endDate: undefined
+  });
   
   const platforms = selectedPlatforms.length > 0 ? selectedPlatforms : ['twitter'];
   
@@ -36,6 +49,61 @@ const InsightTabs: React.FC<InsightTabsProps> = ({ data, selectedPlatforms }) =>
       setIsLoading(false);
     }, 500);
   };
+
+  // Check if any filters are active
+  const isFiltersActive = 
+    sentimentFilter !== 'all' || 
+    engagementFilter !== 'all' || 
+    dateRangeFilter.startDate !== undefined;
+
+  // Function to clear all filters
+  const handleClearFilters = () => {
+    setSentimentFilter('all');
+    setEngagementFilter('all');
+    setDateRangeFilter({ startDate: undefined, endDate: undefined });
+  };
+
+  // Apply filters to insights
+  const getFilteredInsights = (platform: string) => {
+    const insights = getPlatformInsights(data, platform);
+    
+    return insights.filter(insight => {
+      // Filter by sentiment
+      if (sentimentFilter !== 'all' && insight.sentiment !== sentimentFilter) {
+        return false;
+      }
+      
+      // Filter by engagement level (using a mock implementation)
+      if (engagementFilter !== 'all') {
+        const engagementLevel = getEngagementLevel(insight);
+        if (engagementLevel !== engagementFilter) {
+          return false;
+        }
+      }
+      
+      // Filter by date range
+      if (dateRangeFilter.startDate) {
+        const insightDate = new Date(insight.timestamp);
+        if (dateRangeFilter.endDate) {
+          // If both start and end dates are set, check if the insight date is within the range
+          return insightDate >= dateRangeFilter.startDate && insightDate <= dateRangeFilter.endDate;
+        } else {
+          // If only start date is set, check if the insight date is on or after the start date
+          return insightDate >= dateRangeFilter.startDate;
+        }
+      }
+      
+      return true;
+    });
+  };
+
+  // Mock function to determine engagement level based on insight id
+  const getEngagementLevel = (insight: any): EngagementFilter => {
+    const id = parseInt(insight.id) || 0;
+    if (id % 3 === 0) return 'high';
+    if (id % 3 === 1) return 'medium';
+    return 'low';
+  };
   
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
@@ -46,7 +114,18 @@ const InsightTabs: React.FC<InsightTabsProps> = ({ data, selectedPlatforms }) =>
           onTabChange={handleTabChange}
         />
         
-        <div className="mt-4">
+        <div className="mt-4 space-y-4">
+          <InsightFilters
+            sentimentFilter={sentimentFilter}
+            engagementFilter={engagementFilter}
+            dateRangeFilter={dateRangeFilter}
+            onSentimentChange={setSentimentFilter}
+            onEngagementChange={setEngagementFilter}
+            onDateRangeChange={setDateRangeFilter}
+            onClearFilters={handleClearFilters}
+            isFiltersActive={isFiltersActive}
+          />
+          
           <PromptPreview
             platforms={selectedPlatforms}
             preset="standard"
@@ -72,7 +151,7 @@ const InsightTabs: React.FC<InsightTabsProps> = ({ data, selectedPlatforms }) =>
                   <div className="space-y-8">
                     <PlatformSection 
                       platform={platform}
-                      insights={getPlatformInsights(data, platform)}
+                      insights={getFilteredInsights(platform)}
                       platformData={data?.platformData?.[platform]}
                     />
                     
