@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2, RefreshCw } from 'lucide-react';
 import { useInsightData } from '@/hooks/useInsightData';
 import InsightTabs from './InsightTabs';
+import DashboardHeader from './DashboardHeader';
 import { toast } from 'sonner';
 
 const InsightDashboard = () => {
@@ -22,6 +23,16 @@ const InsightDashboard = () => {
   const handleRetry = () => {
     toast.info("Retrying data fetch...");
     refetch();
+  };
+
+  // Set date range for the last week (for demonstration)
+  const today = new Date();
+  const lastWeek = new Date(today);
+  lastWeek.setDate(today.getDate() - 7);
+  
+  const dateRange = {
+    start: lastWeek,
+    end: today
   };
 
   if (isLoading) {
@@ -51,12 +62,12 @@ const InsightDashboard = () => {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Social Media Insights</h1>
-        <p className="text-muted-foreground">
-          Generated insights from multiple platforms using CrewAI agents
-        </p>
-      </div>
+      <DashboardHeader 
+        data={data} 
+        isLoading={isLoading} 
+        onRefresh={refetch} 
+        dateRange={dateRange}
+      />
 
       <Tabs defaultValue="insights" className="w-full">
         <TabsList className="mb-8">
