@@ -12,6 +12,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import PlatformTabs from './PlatformTabs';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getPlatformDisplayName } from '@/lib/platformUtils';
 
 interface InsightTabsProps {
   data: InsightDataType | null;
@@ -19,14 +20,11 @@ interface InsightTabsProps {
 }
 
 const InsightTabs: React.FC<InsightTabsProps> = ({ data, selectedPlatforms }) => {
-  // States
   const [activeTab, setActiveTab] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   
-  // If no platforms selected, default to twitter
   const platforms = selectedPlatforms.length > 0 ? selectedPlatforms : ['twitter'];
   
-  // Set initial active tab if not set yet
   React.useEffect(() => {
     if (!activeTab && platforms.length > 0) {
       setActiveTab(platforms[0]);
@@ -37,14 +35,12 @@ const InsightTabs: React.FC<InsightTabsProps> = ({ data, selectedPlatforms }) =>
     setIsLoading(true);
     setActiveTab(value);
     
-    // Simulate loading
     setTimeout(() => {
       setIsLoading(false);
     }, 500);
   };
   
   const showPromptPreview = () => {
-    // For development purposes only - show what would be sent to the backend
     const previewData = {
       platforms: selectedPlatforms,
       timeRange: "7d",
@@ -69,7 +65,6 @@ const InsightTabs: React.FC<InsightTabsProps> = ({ data, selectedPlatforms }) =>
           onTabChange={handleTabChange}
         />
         
-        {/* Development mode preview button */}
         <div className="absolute right-0 top-0">
           <Button 
             variant="ghost" 
@@ -120,7 +115,6 @@ const InsightTabs: React.FC<InsightTabsProps> = ({ data, selectedPlatforms }) =>
   );
 };
 
-// Loading state component
 const LoadingState = () => (
   <div className="space-y-8">
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
@@ -149,29 +143,24 @@ const LoadingState = () => (
   </div>
 );
 
-// Helper function to get platform-specific insights
 const getPlatformInsights = (data: InsightDataType | null, platform: string) => {
   if (!data || !data.insights) return [];
   return data.insights.filter(insight => insight.platform === platform);
 };
 
-// Helper function to get platform-specific chart data
 const getPlatformChartData = (data: InsightDataType | null, platform: string) => {
   if (!data || !data.chartData) {
     return { sentiment: [], engagement: [] };
   }
   
-  // Get platform-specific chart data if available
   const platformCharts = data.platformChartData?.[platform];
   if (platformCharts) {
     return platformCharts;
   }
   
-  // Fall back to global chart data
   return data.chartData;
 };
 
-// Render platform-specific post content
 const renderPlatformContent = (data: InsightDataType | null, platform: string) => {
   if (!data) return null;
   

@@ -2,6 +2,7 @@
 import React from 'react';
 import { PlatformIcon } from '@/components/icons/PlatformIcons';
 import { cn } from '@/lib/utils';
+import { getPlatformDisplayName } from '@/lib/platformUtils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { motion } from 'framer-motion';
 
@@ -18,20 +19,6 @@ const PlatformTabs: React.FC<PlatformTabsProps> = ({
 }) => {
   const handleTabClick = (platform: string) => {
     onTabChange(platform);
-  };
-
-  // Helper function to get platform display name
-  const getPlatformDisplayName = (platform: string): string => {
-    const displayNames: Record<string, string> = {
-      twitter: 'X (Twitter)',
-      reddit: 'Reddit',
-      linkedin: 'LinkedIn',
-      instagram: 'Instagram',
-      youtube: 'YouTube',
-      web: 'Web Articles'
-    };
-    
-    return displayNames[platform] || platform;
   };
 
   return (
