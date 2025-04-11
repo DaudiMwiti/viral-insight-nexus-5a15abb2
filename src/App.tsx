@@ -33,8 +33,6 @@ const App = () => {
             <Sonner position="top-right" />
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/homepage" element={<Navigate to="/insights" replace />} />
-              <Route path="/overview" element={<Navigate to="/insights" replace />} />
               <Route path="/comparison" element={<Comparison />} />
               <Route path="/insights" element={<Insights />} />
               <Route path="/alerts" element={<Alerts />} />
