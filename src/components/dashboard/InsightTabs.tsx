@@ -1,16 +1,17 @@
-
 import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ExternalLink, Loader2 } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { PlatformIcon } from '@/components/icons/PlatformIcons';
 import InsightCards from './InsightCards';
 import InsightCharts from './InsightCharts';
-import { InsightDataType, PlatformInsightType } from '@/types/insight';
+import { InsightDataType } from '@/types/insight';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
+import PlatformTabs from './PlatformTabs';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface InsightTabsProps {
   data: InsightDataType | null;
@@ -62,16 +63,11 @@ const InsightTabs: React.FC<InsightTabsProps> = ({ data, selectedPlatforms }) =>
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
       <div className="relative">
-        <ScrollArea className="w-full pb-4">
-          <TabsList className="mb-8 flex w-max">
-            {platforms.map(platform => (
-              <TabsTrigger key={platform} value={platform} className="flex items-center gap-2">
-                <PlatformIcon platform={platform} size={16} />
-                <span className="capitalize">{getPlatformDisplayName(platform)}</span>
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </ScrollArea>
+        <PlatformTabs 
+          platforms={platforms}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+        />
         
         {/* Development mode preview button */}
         <div className="absolute right-0 top-0">
@@ -86,28 +82,40 @@ const InsightTabs: React.FC<InsightTabsProps> = ({ data, selectedPlatforms }) =>
         </div>
       </div>
       
-      {platforms.map(platform => (
-        <TabsContent key={platform} value={platform}>
-          {isLoading ? (
-            <LoadingState />
-          ) : (
-            <div className="space-y-8">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                <InsightCards 
-                  insights={getPlatformInsights(data, platform)} 
-                  platform={platform}
-                />
-              </div>
-              
-              <InsightCharts 
-                data={getPlatformChartData(data, platform)} 
-              />
-              
-              {renderPlatformContent(data, platform)}
-            </div>
-          )}
-        </TabsContent>
-      ))}
+      <AnimatePresence mode="wait">
+        {platforms.map(platform => (
+          activeTab === platform && (
+            <motion.div
+              key={platform}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+            >
+              <TabsContent value={platform} forceMount>
+                {isLoading ? (
+                  <LoadingState />
+                ) : (
+                  <div className="space-y-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                      <InsightCards 
+                        insights={getPlatformInsights(data, platform)} 
+                        platform={platform}
+                      />
+                    </div>
+                    
+                    <InsightCharts 
+                      data={getPlatformChartData(data, platform)} 
+                    />
+                    
+                    {renderPlatformContent(data, platform)}
+                  </div>
+                )}
+              </TabsContent>
+            </motion.div>
+          )
+        ))}
+      </AnimatePresence>
     </Tabs>
   );
 };
@@ -140,20 +148,6 @@ const LoadingState = () => (
     </div>
   </div>
 );
-
-// Helper function to get platform display name
-const getPlatformDisplayName = (platform: string): string => {
-  const displayNames: Record<string, string> = {
-    twitter: 'X (Twitter)',
-    reddit: 'Reddit',
-    linkedin: 'LinkedIn',
-    instagram: 'Instagram',
-    youtube: 'YouTube',
-    web: 'Web Articles'
-  };
-  
-  return displayNames[platform] || platform;
-};
 
 // Helper function to get platform-specific insights
 const getPlatformInsights = (data: InsightDataType | null, platform: string) => {
