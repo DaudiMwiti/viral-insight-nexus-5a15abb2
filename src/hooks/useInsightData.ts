@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { InsightDataType } from '@/types/insight';
@@ -260,7 +259,7 @@ const fetchInsightData = async (): Promise<InsightDataType> => {
 // Function to generate a random new insight for simulation
 const generateRandomInsight = (): InsightDataType['insights'][0] => {
   const platforms = ['twitter', 'reddit', 'linkedin', 'instagram', 'youtube', 'web'];
-  const sentiments = ['positive', 'neutral', 'negative'];
+  const sentiments: Array<'positive' | 'neutral' | 'negative'> = ['positive', 'neutral', 'negative'];
   const titles = [
     'Trending Topic Discovered',
     'Customer Sentiment Shift',
@@ -299,25 +298,27 @@ export const useInsightData = (realtimeEnabled = true, pollingInterval = 30000) 
     queryKey: ['insightData'],
     queryFn: fetchInsightData,
     refetchInterval: realtimeEnabled ? pollingInterval : false,
-    onSuccess: (newData) => {
-      if (data) {
-        // In a real implementation, we would compare the new data with the existing data
-        // For simulation, we'll just add a new random insight every poll if realtime is enabled
-        if (realtimeEnabled) {
-          const currentTime = new Date();
-          const timeDiff = currentTime.getTime() - lastUpdate.getTime();
-          
-          // Only show notification if it's not the initial load and enough time has passed
-          if (timeDiff > pollingInterval * 0.9) {
-            setHasNewInsights(true);
-            toast.info("🔄 New insights available", {
-              description: "Fresh data has been detected",
-              action: {
-                label: "View",
-                onClick: () => setHasNewInsights(false)
-              }
-            });
-            setLastUpdate(currentTime);
+    meta: {
+      onSuccess: (newData: InsightDataType) => {
+        if (data) {
+          // In a real implementation, we would compare the new data with the existing data
+          // For simulation, we'll just add a new random insight every poll if realtime is enabled
+          if (realtimeEnabled) {
+            const currentTime = new Date();
+            const timeDiff = currentTime.getTime() - lastUpdate.getTime();
+            
+            // Only show notification if it's not the initial load and enough time has passed
+            if (timeDiff > pollingInterval * 0.9) {
+              setHasNewInsights(true);
+              toast.info("🔄 New insights available", {
+                description: "Fresh data has been detected",
+                action: {
+                  label: "View",
+                  onClick: () => setHasNewInsights(false)
+                }
+              });
+              setLastUpdate(currentTime);
+            }
           }
         }
       }
@@ -351,6 +352,27 @@ export const useInsightData = (realtimeEnabled = true, pollingInterval = 30000) 
       setHasNewInsights(false);
     }
   }, [hasNewInsights, data]);
+
+  // Set up a callback effect for new data
+  useEffect(() => {
+    if (data && realtimeEnabled) {
+      const currentTime = new Date();
+      const timeDiff = currentTime.getTime() - lastUpdate.getTime();
+      
+      // Only show notification if it's not the initial load and enough time has passed
+      if (timeDiff > pollingInterval * 0.9) {
+        setHasNewInsights(true);
+        toast.info("🔄 New insights available", {
+          description: "Fresh data has been detected",
+          action: {
+            label: "View",
+            onClick: () => setHasNewInsights(false)
+          }
+        });
+        setLastUpdate(currentTime);
+      }
+    }
+  }, [data, realtimeEnabled, lastUpdate, pollingInterval]);
 
   return { 
     data: displayData, 
