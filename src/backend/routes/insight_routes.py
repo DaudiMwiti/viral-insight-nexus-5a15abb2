@@ -1,35 +1,82 @@
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from src.backend.schemas.request import RunFlowRequest
 from src.backend.schemas.response import InsightResponse
-from src.backend.mock_data.fake_insights import get_mock_insights
 from src.backend.utils.logger import log_request
 import os
 from dotenv import load_dotenv
 from pydantic import BaseModel
+from src.backend.agents.run_agents import InsightPipeline
+import logging
 
 # Load environment variables
 load_dotenv()
 
+# Set up logging
+logger = logging.getLogger(__name__)
+
+# Create router
 router = APIRouter(tags=["insights"])
 
+# Initialize the insight pipeline
+async def get_insight_pipeline():
+    return InsightPipeline()
+
 @router.post("/run-flow", response_model=InsightResponse)
-async def run_flow(request: RunFlowRequest):
+async def run_flow(
+    request: RunFlowRequest,
+    pipeline: InsightPipeline = Depends(get_insight_pipeline)
+):
+    """
+    Run the insight generation pipeline with the specified parameters.
+    
+    This endpoint orchestrates the complete flow:
+    1. Scrape content from the selected platforms
+    2. Analyze the content with AI
+    3. Generate formatted insights
+    
+    Args:
+        request: The parameters for the insight generation
+        pipeline: The insight pipeline dependency
+        
+    Returns:
+        InsightResponse object with generated insights
+        
+    Raises:
+        HTTPException: If an error occurs during processing
+    """
     # Log the incoming request
     log_request(request)
     
+    # Check if GROQ_API_KEY is set
+    groq_api_key = os.getenv("GROQ_API_KEY")
+    if not groq_api_key:
+        raise HTTPException(
+            status_code=500,
+            detail="GROQ_API_KEY is not configured. Please set this environment variable."
+        )
+    
     try:
-        # Get mock insights based on request parameters
-        mock_response = get_mock_insights(
+        # Extract keywords from the request (if any)
+        keywords = request.keywords if hasattr(request, 'keywords') else None
+        
+        # Run the insight pipeline
+        response = await pipeline.run(
             platforms=request.platforms,
             preset=request.preset,
             tone=request.tone,
-            date_range=request.dateRange
+            date_range=request.dateRange,
+            keywords=keywords
         )
         
-        return mock_response
+        return response
+    except ValueError as e:
+        # Handle validation errors
+        logger.error(f"Validation error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         # Log the error and return an appropriate response
+        logger.error(f"Error processing request: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error processing request: {str(e)}")
 
 # Response model for the test_groq endpoint
