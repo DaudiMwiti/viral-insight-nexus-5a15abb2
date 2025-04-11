@@ -1,8 +1,6 @@
 
 import React, { useState } from "react";
 import AppLayout from "@/components/layout/AppLayout";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { Info } from "lucide-react";
 import InsightDashboard from "@/components/dashboard/InsightDashboard";
 import { Toaster } from "@/components/ui/sonner";
 
