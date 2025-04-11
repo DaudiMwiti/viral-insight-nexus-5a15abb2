@@ -60,7 +60,10 @@ const InsightDashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
             <InsightCards insights={data?.insights || []} />
           </div>
-          <InsightCharts data={data?.chartData || []} />
+          <InsightCharts data={data?.chartData || {
+            sentiment: [],
+            engagement: []
+          }} />
         </TabsContent>
         <TabsContent value="threads">
           <ThreadOutput threadData={data?.threadOutput || []} />
