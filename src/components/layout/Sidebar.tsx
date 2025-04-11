@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Sidebar as ShadcnSidebar, 
@@ -19,7 +18,14 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ onPlatformsChange }) => {
-  const [selectedPlatforms, setSelectedPlatforms] = useState(['twitter', 'reddit']);
+  const [selectedPlatforms, setSelectedPlatforms] = useState([
+    'twitter', 
+    'reddit', 
+    'linkedin', 
+    'instagram', 
+    'youtube', 
+    'web'
+  ]);
   
   const handlePlatformsChange = (platforms: string[]) => {
     setSelectedPlatforms(platforms);
@@ -39,9 +45,10 @@ const Sidebar: React.FC<SidebarProps> = ({ onPlatformsChange }) => {
   };
 
   const handleReset = () => {
-    setSelectedPlatforms(['twitter']);
+    const defaultPlatforms = ['twitter', 'reddit', 'linkedin', 'instagram', 'youtube', 'web'];
+    setSelectedPlatforms(defaultPlatforms);
     if (onPlatformsChange) {
-      onPlatformsChange(['twitter']);
+      onPlatformsChange(defaultPlatforms);
     }
     toast.info('Settings reset to default');
   };

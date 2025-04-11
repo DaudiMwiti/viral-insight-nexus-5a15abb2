@@ -10,7 +10,14 @@ import { toast } from 'sonner';
 const InsightDashboard = () => {
   const [selectedView, setSelectedView] = useState('insights');
   const { data, isLoading, error, refetch } = useInsightData();
-  const [selectedPlatforms, setSelectedPlatforms] = useState(['twitter', 'reddit']);
+  const [selectedPlatforms, setSelectedPlatforms] = useState([
+    'twitter', 
+    'reddit', 
+    'linkedin', 
+    'instagram', 
+    'youtube', 
+    'web'
+  ]);
 
   const handleRetry = () => {
     toast.info("Retrying data fetch...");

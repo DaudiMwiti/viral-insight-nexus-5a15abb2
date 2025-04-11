@@ -8,7 +8,14 @@ interface AppLayoutProps {
 }
 
 const AppLayout = ({ children }: AppLayoutProps) => {
-  const [selectedPlatforms, setSelectedPlatforms] = useState(['twitter', 'reddit']);
+  const [selectedPlatforms, setSelectedPlatforms] = useState([
+    'twitter', 
+    'reddit', 
+    'linkedin', 
+    'instagram', 
+    'youtube', 
+    'web'
+  ]);
 
   // Pass selected platforms to the child components
   const childrenWithProps = React.Children.map(children, child => {
