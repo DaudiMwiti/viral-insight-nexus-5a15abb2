@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import PlatformTabs from './PlatformTabs';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getPlatformDisplayName } from '@/lib/platformUtils';
+import PromptPreview from '@/components/controls/PromptPreview';
 
 interface InsightTabsProps {
   data: InsightDataType | null;
@@ -42,22 +42,6 @@ const InsightTabs: React.FC<InsightTabsProps> = ({ data, selectedPlatforms }) =>
     }, 500);
   };
   
-  const showPromptPreview = () => {
-    const previewData = {
-      platforms: selectedPlatforms,
-      timeRange: "7d",
-      tones: ["professional", "concise"],
-      agentPreset: "standard"
-    };
-    
-    toast.info("Agent Prompt Preview", {
-      description: <pre className="text-xs mt-2 p-2 bg-gray-100 rounded">
-        {JSON.stringify(previewData, null, 2)}
-      </pre>,
-      duration: 10000,
-    });
-  };
-  
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
       <div className="relative">
@@ -67,15 +51,12 @@ const InsightTabs: React.FC<InsightTabsProps> = ({ data, selectedPlatforms }) =>
           onTabChange={handleTabChange}
         />
         
-        <div className="absolute right-0 top-0">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={showPromptPreview}
-            className="text-xs text-muted-foreground"
-          >
-            View Prompt →
-          </Button>
+        <div className="mt-4">
+          <PromptPreview
+            platforms={selectedPlatforms}
+            preset="standard"
+            tone="professional"
+          />
         </div>
       </div>
       
