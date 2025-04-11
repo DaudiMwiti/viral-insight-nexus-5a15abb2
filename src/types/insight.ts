@@ -5,6 +5,7 @@ export interface InsightType {
   description: string;
   sentiment: 'positive' | 'neutral' | 'negative';
   timestamp: string;
+  platform?: string;
 }
 
 export interface ThreadType {
@@ -27,15 +28,23 @@ export interface ChartDataType {
   }>;
 }
 
+export interface PlatformInsightType {
+  post_title: string;
+  post_link: string;
+  content_lines: string[];
+}
+
 export interface InsightDataType {
   insights: InsightType[];
   threadOutput: ThreadType[];
   chartData: ChartDataType;
   rawData: any;
+  platformData?: Record<string, PlatformInsightType[]>;
+  platformChartData?: Record<string, ChartDataType>;
 }
 
 export interface InsightParams {
-  platform: string;
+  platforms: string[];
   preset: string;
   tone: string;
   date: string;

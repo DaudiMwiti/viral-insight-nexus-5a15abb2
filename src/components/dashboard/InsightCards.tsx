@@ -2,13 +2,15 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { PlatformIcon } from '@/components/icons/PlatformIcons';
 import { InsightType } from '@/types/insight';
 
 interface InsightCardsProps {
   insights: InsightType[];
+  platform?: string;
 }
 
-const InsightCards = ({ insights }: InsightCardsProps) => {
+const InsightCards = ({ insights, platform }: InsightCardsProps) => {
   // If no insights are passed, render demo insights
   const displayInsights = insights.length > 0 ? insights : [
     {
@@ -17,6 +19,7 @@ const InsightCards = ({ insights }: InsightCardsProps) => {
       description: 'There was a significant increase in engagement around the topic of AI and automation yesterday, with most reactions being positive.',
       sentiment: 'positive',
       timestamp: new Date().toISOString(),
+      platform: platform || 'twitter'
     },
     {
       id: '2',
@@ -24,6 +27,7 @@ const InsightCards = ({ insights }: InsightCardsProps) => {
       description: 'Users are actively discussing the new voice note feature with mixed reactions. Privacy concerns are the main point of contention.',
       sentiment: 'neutral',
       timestamp: new Date().toISOString(),
+      platform: platform || 'twitter'
     },
     {
       id: '3',
@@ -31,6 +35,7 @@ const InsightCards = ({ insights }: InsightCardsProps) => {
       description: 'Negative sentiment detected regarding yesterday\'s service outage. Users reported inability to access their accounts for approximately 2 hours.',
       sentiment: 'negative',
       timestamp: new Date().toISOString(),
+      platform: platform || 'twitter'
     }
   ];
 
@@ -54,6 +59,12 @@ const InsightCards = ({ insights }: InsightCardsProps) => {
               {getSentimentIcon(insight.sentiment)}
               <span>{insight.title}</span>
             </CardTitle>
+            {platform && (
+              <div className="flex items-center text-xs text-muted-foreground mt-1">
+                <PlatformIcon platform={insight.platform || platform} size={12} className="mr-1" />
+                <span>{new Date(insight.timestamp).toLocaleDateString()}</span>
+              </div>
+            )}
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">{insight.description}</p>

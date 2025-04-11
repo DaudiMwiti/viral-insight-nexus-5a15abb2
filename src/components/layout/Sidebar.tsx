@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Sidebar as ShadcnSidebar, 
   SidebarContent, 
@@ -12,12 +12,38 @@ import PlatformSelector from '@/components/controls/PlatformSelector';
 import AgentPresetSelector from '@/components/controls/AgentPresetSelector';
 import ToneSelector from '@/components/controls/ToneSelector';
 import DateRangeSelector from '@/components/controls/DateRangeSelector';
-import { PlayIcon } from 'lucide-react';
+import { PlayIcon, RefreshCw } from 'lucide-react';
 
-const Sidebar = () => {
+interface SidebarProps {
+  onPlatformsChange?: (platforms: string[]) => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ onPlatformsChange }) => {
+  const [selectedPlatforms, setSelectedPlatforms] = useState(['twitter', 'reddit']);
+  
+  const handlePlatformsChange = (platforms: string[]) => {
+    setSelectedPlatforms(platforms);
+    if (onPlatformsChange) {
+      onPlatformsChange(platforms);
+    }
+  };
+
   const handleRunFlow = () => {
-    toast.info('Starting agent flow...');
+    if (selectedPlatforms.length === 0) {
+      toast.error('Please select at least one platform');
+      return;
+    }
+    
+    toast.info(`Starting agent flow for ${selectedPlatforms.length} platforms...`);
     // This will be implemented to trigger the API call
+  };
+
+  const handleReset = () => {
+    setSelectedPlatforms(['twitter']);
+    if (onPlatformsChange) {
+      onPlatformsChange(['twitter']);
+    }
+    toast.info('Settings reset to default');
   };
 
   return (
@@ -31,18 +57,31 @@ const Sidebar = () => {
         <p className="text-xs text-muted-foreground mt-1">AI-powered insight generation</p>
       </SidebarHeader>
       <SidebarContent className="px-4 py-6 space-y-6">
-        <PlatformSelector />
+        <PlatformSelector 
+          selectedPlatforms={selectedPlatforms}
+          onPlatformsChange={handlePlatformsChange}
+        />
         <AgentPresetSelector />
         <ToneSelector />
         <DateRangeSelector />
-        <Button 
-          className="w-full mt-8" 
-          onClick={handleRunFlow}
-          size="lg"
-        >
-          <PlayIcon className="mr-2 h-4 w-4" />
-          Run Agent Flow
-        </Button>
+        <div className="flex flex-col space-y-2 mt-8">
+          <Button 
+            className="w-full" 
+            onClick={handleRunFlow}
+            size="lg"
+          >
+            <PlayIcon className="mr-2 h-4 w-4" />
+            Run Agent Flow
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={handleReset}
+          >
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Reset
+          </Button>
+        </div>
       </SidebarContent>
       <SidebarFooter className="px-4 py-4 border-t text-xs text-muted-foreground">
         <div className="flex items-center justify-between">

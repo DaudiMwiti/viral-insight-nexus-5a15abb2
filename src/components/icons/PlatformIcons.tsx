@@ -1,10 +1,12 @@
 
 import React from 'react';
-import { Twitter, Globe } from 'lucide-react';
+import { Twitter, Globe, Linkedin, Instagram, Youtube, Alien } from 'lucide-react';
 
 export const TwitterIcon = Twitter;
-export const GlobeIcon = Globe;
-
+export const LinkedinIcon = Linkedin;
+export const InstagramIcon = Instagram;
+export const YoutubeIcon = Youtube;
+export const WebIcon = Globe;
 export const RedditIcon = ({ className = "" }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -23,3 +25,31 @@ export const RedditIcon = ({ className = "" }: { className?: string }) => (
     <path d="M9 17c.9.9 2.5.9 3.4 0" />
   </svg>
 );
+
+// Helper component to get the icon based on platform
+interface PlatformIconProps {
+  platform: string;
+  size?: number;
+  className?: string;
+}
+
+export const PlatformIcon: React.FC<PlatformIconProps> = ({ platform, size = 24, className = "" }) => {
+  const iconProps = { size, className };
+  
+  switch (platform) {
+    case 'twitter':
+      return <TwitterIcon {...iconProps} />;
+    case 'reddit':
+      return <RedditIcon className={className} />;
+    case 'linkedin':
+      return <LinkedinIcon {...iconProps} />;
+    case 'instagram':
+      return <InstagramIcon {...iconProps} />;
+    case 'youtube':
+      return <YoutubeIcon {...iconProps} />;
+    case 'web':
+      return <WebIcon {...iconProps} />;
+    default:
+      return <Globe {...iconProps} />;
+  }
+};
