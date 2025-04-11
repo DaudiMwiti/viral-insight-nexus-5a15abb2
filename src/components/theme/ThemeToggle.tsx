@@ -14,6 +14,11 @@ export function ThemeToggle({ className }: { className?: string }) {
     setMounted(true);
   }, []);
 
+  // Function to toggle the theme
+  const toggleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
+
   if (!mounted) return null;
 
   return (
@@ -22,15 +27,15 @@ export function ThemeToggle({ className }: { className?: string }) {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+          onClick={toggleTheme}
           className={`transition-all duration-300 ${className}`}
+          aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
         >
           {theme === "light" ? (
-            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:rotate-90 dark:scale-0" />
+            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:rotate-90 dark:scale-0" aria-hidden="true" />
           ) : (
-            <Moon className="h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <Moon className="h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" aria-hidden="true" />
           )}
-          <span className="sr-only">Toggle theme</span>
         </Button>
       </TooltipTrigger>
       <TooltipContent>

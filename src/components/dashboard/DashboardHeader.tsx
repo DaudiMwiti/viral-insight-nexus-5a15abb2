@@ -86,7 +86,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   };
 
   return (
-    <div className="mb-8">
+    <header className="mb-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold">Insights Dashboard</h1>
@@ -102,11 +102,13 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             size="sm" 
             onClick={handleRefresh}
             disabled={isLoading || isRefreshing}
+            aria-label={isRefreshing ? "Refreshing data..." : "Refresh data"}
           >
             <motion.div
               animate={isRefreshing ? { rotate: 360 } : { rotate: 0 }}
               transition={{ duration: 1, ease: "easeInOut" }}
               className="mr-2"
+              aria-hidden="true"
             >
               <RefreshCw className="h-4 w-4" />
             </motion.div>
@@ -117,17 +119,17 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4" role="region" aria-label="Dashboard metrics">
         {/* Total Posts Card */}
         <Card className="overflow-hidden hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <h3 className="text-sm font-medium leading-none tracking-tight text-muted-foreground">
+              <h3 className="text-sm font-medium leading-none tracking-tight text-muted-foreground" id="total-posts-heading">
                 Total Posts Analyzed
               </h3>
-              <BarChart2 className="h-5 w-5 text-primary" />
+              <BarChart2 className="h-5 w-5 text-primary" aria-hidden="true" />
             </div>
-            <div className="text-3xl font-bold mt-2">{totalPosts}</div>
+            <div className="text-3xl font-bold mt-2" aria-labelledby="total-posts-heading">{totalPosts}</div>
           </CardContent>
         </Card>
 
@@ -140,12 +142,12 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         )}>
           <CardContent className="p-6">
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <h3 className="text-sm font-medium leading-none tracking-tight text-muted-foreground">
+              <h3 className="text-sm font-medium leading-none tracking-tight text-muted-foreground" id="dominant-sentiment-heading">
                 Dominant Sentiment
               </h3>
-              <TrendingUp className="h-5 w-5 text-primary" />
+              <TrendingUp className="h-5 w-5 text-primary" aria-hidden="true" />
             </div>
-            <div className="text-3xl font-bold mt-2">
+            <div className="text-3xl font-bold mt-2" aria-labelledby="dominant-sentiment-heading">
               {formatSentiment(dominantSentiment)}
             </div>
           </CardContent>
@@ -155,18 +157,18 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         <Card className="overflow-hidden hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <h3 className="text-sm font-medium leading-none tracking-tight text-muted-foreground">
+              <h3 className="text-sm font-medium leading-none tracking-tight text-muted-foreground" id="top-platform-heading">
                 Top Platform
               </h3>
-              <Award className="h-5 w-5 text-primary" />
+              <Award className="h-5 w-5 text-primary" aria-hidden="true" />
             </div>
-            <div className="text-3xl font-bold mt-2">
+            <div className="text-3xl font-bold mt-2" aria-labelledby="top-platform-heading">
               {getPlatformDisplayName(topPlatform)}
             </div>
           </CardContent>
         </Card>
       </div>
-    </div>
+    </header>
   );
 };
 

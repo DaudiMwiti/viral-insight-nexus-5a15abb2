@@ -61,24 +61,28 @@ const InsightCards = ({ insights, platform }: InsightCardsProps) => {
   const getSentimentIcon = (sentiment: string) => {
     switch (sentiment) {
       case 'positive':
-        return <TrendingUp className="h-5 w-5 text-insight-positive" />;
+        return <TrendingUp className="h-5 w-5 text-insight-positive" aria-hidden="true" />;
       case 'negative':
-        return <TrendingDown className="h-5 w-5 text-insight-negative" />;
+        return <TrendingDown className="h-5 w-5 text-insight-negative" aria-hidden="true" />;
       default:
-        return <Minus className="h-5 w-5 text-insight-neutral" />;
+        return <Minus className="h-5 w-5 text-insight-neutral" aria-hidden="true" />;
     }
   };
 
   const getSentimentClass = (sentiment: string) => {
     switch (sentiment) {
       case 'positive':
-        return 'bg-green-50 border-green-200';
+        return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800';
       case 'negative':
-        return 'bg-red-50 border-red-200';
+        return 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800';
       case 'neutral':
       default:
-        return 'bg-blue-50 border-blue-200';
+        return 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800';
     }
+  };
+  
+  const getSentimentLabel = (sentiment: string) => {
+    return `Sentiment: ${sentiment.charAt(0).toUpperCase() + sentiment.slice(1)}`;
   };
 
   return (
@@ -96,44 +100,58 @@ const InsightCards = ({ insights, platform }: InsightCardsProps) => {
         >
           <Tooltip>
             <TooltipTrigger asChild>
-              <Card 
+              <article 
                 className={cn(
                   `overflow-hidden ${getSentimentClass(insight.sentiment)}`,
                   "relative transition-all duration-200 ease-in-out hover:shadow-lg hover:translate-y-[-2px]"
                 )}
+                tabIndex={0}
               >
-                <div 
-                  className="absolute top-3 right-3 z-10 cursor-pointer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleBookmark(insight.id);
-                  }}
-                >
-                  <Bookmark 
-                    className={cn(
-                      "h-5 w-5 transition-all duration-200",
-                      bookmarkedInsights.has(insight.id) 
-                        ? "fill-primary text-primary" 
-                        : "text-muted-foreground hover:text-primary"
+                <Card className="border-0 bg-transparent">
+                  <div 
+                    className="absolute top-3 right-3 z-10 cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleBookmark(insight.id);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleBookmark(insight.id);
+                      }
+                    }}
+                    tabIndex={0}
+                    role="button"
+                    aria-pressed={bookmarkedInsights.has(insight.id)}
+                    aria-label={bookmarkedInsights.has(insight.id) ? "Remove bookmark" : "Add bookmark"}
+                  >
+                    <Bookmark 
+                      className={cn(
+                        "h-5 w-5 transition-all duration-200",
+                        bookmarkedInsights.has(insight.id) 
+                          ? "fill-primary text-primary" 
+                          : "text-muted-foreground hover:text-primary"
+                      )}
+                    />
+                  </div>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      {getSentimentIcon(insight.sentiment)}
+                      <span>{insight.title}</span>
+                      <span className="sr-only">{getSentimentLabel(insight.sentiment)}</span>
+                    </CardTitle>
+                    {platform && (
+                      <div className="flex items-center text-xs text-muted-foreground mt-1">
+                        <PlatformIcon platform={insight.platform || platform} size={12} className="mr-1" aria-hidden="true" />
+                        <span>{new Date(insight.timestamp).toLocaleDateString()}</span>
+                      </div>
                     )}
-                  />
-                </div>
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    {getSentimentIcon(insight.sentiment)}
-                    <span>{insight.title}</span>
-                  </CardTitle>
-                  {platform && (
-                    <div className="flex items-center text-xs text-muted-foreground mt-1">
-                      <PlatformIcon platform={insight.platform || platform} size={12} className="mr-1" />
-                      <span>{new Date(insight.timestamp).toLocaleDateString()}</span>
-                    </div>
-                  )}
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">{insight.description}</p>
-                </CardContent>
-              </Card>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">{insight.description}</p>
+                  </CardContent>
+                </Card>
+              </article>
             </TooltipTrigger>
             <TooltipContent side="bottom" className="p-3 max-w-xs">
               <div className="space-y-1">

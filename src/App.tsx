@@ -11,6 +11,9 @@ import Alerts from "./pages/Alerts";
 import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./components/theme/ThemeProvider";
 
+// Focus visible outline styles
+import "./styles/focus-visible.css";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

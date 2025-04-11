@@ -21,25 +21,38 @@ const PlatformTabs: React.FC<PlatformTabsProps> = ({
     onTabChange(platform);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent, platform: string) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onTabChange(platform);
+    }
+  };
+
   return (
-    <div className="relative mb-8">
+    <div className="relative mb-8" role="tablist" aria-label="Social platforms">
       <ScrollArea className="w-full pb-4">
         <div className="flex w-max gap-2 p-1 bg-muted/80 rounded-full">
           {platforms.map(platform => (
             <button
               key={platform}
               onClick={() => handleTabClick(platform)}
+              onKeyDown={(e) => handleKeyDown(e, platform)}
               className={cn(
                 "flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 relative",
-                "outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1",
+                "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                 "text-sm font-medium",
                 activeTab === platform 
                   ? "text-foreground" 
                   : "text-muted-foreground hover:text-foreground"
               )}
+              role="tab"
+              aria-selected={activeTab === platform}
+              aria-controls={`${platform}-tab-content`}
+              id={`${platform}-tab`}
+              tabIndex={activeTab === platform ? 0 : -1}
             >
-              <PlatformIcon platform={platform} size={16} />
-              <span className="capitalize">{getPlatformDisplayName(platform)}</span>
+              <PlatformIcon platform={platform} size={16} aria-hidden="true" />
+              <span>{getPlatformDisplayName(platform)}</span>
               
               {activeTab === platform && (
                 <motion.div
@@ -48,6 +61,7 @@ const PlatformTabs: React.FC<PlatformTabsProps> = ({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.2 }}
+                  aria-hidden="true"
                 />
               )}
             </button>

@@ -42,31 +42,31 @@ const InsightDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-[80vh]">
-        <Loader2 className="h-12 w-12 text-primary animate-spin mb-4" />
-        <h3 className="text-xl font-medium">Processing insights...</h3>
-        <p className="text-muted-foreground">Our AI agents are analyzing the data</p>
-      </div>
+      <section className="flex flex-col items-center justify-center h-[80vh]" aria-label="Loading State">
+        <Loader2 className="h-12 w-12 text-primary animate-spin mb-4" aria-hidden="true" />
+        <h2 className="text-xl font-medium">Processing insights...</h2>
+        <p className="text-muted-foreground" role="status">Our AI agents are analyzing the data</p>
+      </section>
     );
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center h-[80vh]">
-        <div className="bg-red-50 text-red-500 p-4 rounded-lg mb-4">
-          <h3 className="text-xl font-medium">Error processing insights</h3>
+      <section className="flex flex-col items-center justify-center h-[80vh]" aria-label="Error State">
+        <div className="bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-300 p-4 rounded-lg mb-4" role="alert">
+          <h2 className="text-xl font-medium">Error processing insights</h2>
           <p>{error.message}</p>
         </div>
         <Button variant="outline" onClick={handleRetry}>
-          <RefreshCw className="mr-2 h-4 w-4" />
+          <RefreshCw className="mr-2 h-4 w-4" aria-hidden="true" />
           Try Again
         </Button>
-      </div>
+      </section>
     );
   }
 
   return (
-    <div>
+    <section aria-label="Insights Dashboard">
       <DashboardHeader 
         data={data} 
         isLoading={isLoading} 
@@ -77,7 +77,7 @@ const InsightDashboard = () => {
       />
 
       <Tabs defaultValue="insights" className="w-full">
-        <TabsList className="mb-8">
+        <TabsList className="mb-8" aria-label="View options">
           <TabsTrigger value="insights">Generated Insights</TabsTrigger>
           <TabsTrigger value="raw">Raw Data</TabsTrigger>
         </TabsList>
@@ -93,9 +93,11 @@ const InsightDashboard = () => {
         
         <TabsContent value="raw">
           <div className="grid grid-cols-1 gap-6">
-            <pre className="bg-gray-100 p-4 rounded-lg overflow-auto max-h-[600px]">
-              {JSON.stringify(data?.rawData, null, 2)}
-            </pre>
+            <section aria-label="Raw JSON Data">
+              <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-auto max-h-[600px]" tabIndex={0}>
+                {JSON.stringify(data?.rawData, null, 2)}
+              </pre>
+            </section>
           </div>
         </TabsContent>
       </Tabs>
@@ -104,7 +106,7 @@ const InsightDashboard = () => {
         {/* Charts container for export purposes */}
         {data && <DashboardCharts data={data} />}
       </div>
-    </div>
+    </section>
   );
 };
 

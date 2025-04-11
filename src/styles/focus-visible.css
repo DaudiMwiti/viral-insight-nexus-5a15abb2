@@ -1,0 +1,54 @@
+
+/* Enhanced focus styles to improve keyboard navigation */
+:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* Remove default focus styles from buttons */
+button:focus {
+  outline: none;
+}
+
+/* Ensure high contrast in dark mode for improved accessibility */
+:root {
+  --insight-positive: #10b981;
+  --insight-negative: #ef4444;
+  --insight-neutral: #6b7280;
+}
+
+.dark {
+  --insight-positive: #34d399;
+  --insight-negative: #f87171;
+  --insight-neutral: #9ca3af;
+}
+
+/* Apply colors as CSS variables */
+.text-insight-positive {
+  color: var(--insight-positive);
+}
+
+.text-insight-negative {
+  color: var(--insight-negative);
+}
+
+.text-insight-neutral {
+  color: var(--insight-neutral);
+}
+
+/* Increase contrast for interactive elements in dark mode */
+.dark button:not([disabled]),
+.dark a:not([disabled]) {
+  color-adjust: exact;
+}
+
+/* Improve contrast for text in dark mode */
+.dark .text-muted-foreground {
+  color: hsl(var(--muted-foreground) / 0.9);
+}
+
+/* Improve the contrast of the card in dark mode */
+.dark .bg-card {
+  background-color: hsl(var(--card) / 0.8);
+}
