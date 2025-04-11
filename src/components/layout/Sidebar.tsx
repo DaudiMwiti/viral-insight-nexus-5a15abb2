@@ -1,38 +1,56 @@
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { BarChart3, BarChart2, CheckCheck, AlertCircle } from 'lucide-react';
+import { LayoutDashboard, BarChartHorizontal, Sparkles, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import PlatformSelector from '@/components/controls/PlatformSelector';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface SidebarLinkProps {
   to: string;
   children: React.ReactNode;
   label: string;
+  tooltip?: string;
 }
 
 interface SidebarProps {
   onPlatformsChange?: (platforms: string[]) => void;
 }
 
-const SidebarLink: React.FC<SidebarLinkProps> = ({ to, children, label }) => {
+const SidebarLink: React.FC<SidebarLinkProps> = ({ to, children, label, tooltip }) => {
   return (
-    <NavLink
-      to={to}
-      className={({ isActive }) =>
-        cn(
-          "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
-          "text-sidebar-foreground hover:text-sidebar-foreground/80",
-          "hover:bg-sidebar-accent/10",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          isActive && "bg-sidebar-accent/15 text-sidebar-accent font-medium"
-        )
-      }
-      aria-label={label}
-    >
-      {children}
-    </NavLink>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <NavLink
+            to={to}
+            className={({ isActive }) =>
+              cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
+                "text-sidebar-foreground hover:text-sidebar-foreground/80",
+                "hover:bg-sidebar-accent/10",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                isActive && "bg-sidebar-accent/15 text-sidebar-accent font-medium"
+              )
+            }
+            aria-label={label}
+          >
+            {children}
+          </NavLink>
+        </TooltipTrigger>
+        {tooltip && (
+          <TooltipContent side="right">
+            <p>{tooltip}</p>
+          </TooltipContent>
+        )}
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 
@@ -61,19 +79,35 @@ const Sidebar: React.FC<SidebarProps> = ({ onPlatformsChange }) => {
       </div>
       <div className="p-4">
         <nav className="grid gap-1" aria-label="Primary navigation">
-          <SidebarLink to="/" label="Dashboard">
-            <BarChart3 className="h-5 w-5" aria-hidden="true" />
-            <span>Dashboard</span>
+          <SidebarLink 
+            to="/overview" 
+            label="Overview"
+            tooltip="Get a high-level view of your analytics"
+          >
+            <LayoutDashboard className="h-5 w-5" aria-hidden="true" />
+            <span>Overview</span>
           </SidebarLink>
-          <SidebarLink to="/comparison" label="Comparison">
-            <BarChart2 className="h-5 w-5" aria-hidden="true" />
-            <span>Comparison</span>
+          <SidebarLink 
+            to="/comparison" 
+            label="Compare Platforms"
+            tooltip="Compare insights across platforms and dates"
+          >
+            <BarChartHorizontal className="h-5 w-5" aria-hidden="true" />
+            <span>Compare Platforms</span>
           </SidebarLink>
-          <SidebarLink to="/insights" label="Insights">
-            <CheckCheck className="h-5 w-5" aria-hidden="true" />
-            <span>Insights</span>
+          <SidebarLink 
+            to="/insights" 
+            label="AI-Generated Insights"
+            tooltip="Explore AI-powered insights and analysis"
+          >
+            <Sparkles className="h-5 w-5" aria-hidden="true" />
+            <span>AI-Generated Insights</span>
           </SidebarLink>
-          <SidebarLink to="/alerts" label="Alerts">
+          <SidebarLink 
+            to="/alerts" 
+            label="Alerts"
+            tooltip="View and manage alerts"
+          >
             <AlertCircle className="h-5 w-5" aria-hidden="true" />
             <span>Alerts</span>
           </SidebarLink>

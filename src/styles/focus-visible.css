@@ -1,3 +1,4 @@
+
 /* Enhanced focus styles to improve keyboard navigation */
 :focus-visible {
   outline: 2px solid hsl(var(--ring));
@@ -15,12 +16,14 @@ button:focus {
   --insight-positive: #10b981;
   --insight-negative: #ef4444;
   --insight-neutral: #6b7280;
+  --sidebar-active: #8B5CF6;
 }
 
 .dark {
   --insight-positive: #34d399;
   --insight-negative: #f87171;
   --insight-neutral: #9ca3af;
+  --sidebar-active: #A78BFA;
 }
 
 /* Apply colors as CSS variables */
@@ -34,6 +37,13 @@ button:focus {
 
 .text-insight-neutral {
   color: var(--insight-neutral);
+}
+
+/* Sidebar active state styles */
+.sidebar-link-active {
+  background-color: var(--sidebar-active);
+  color: white;
+  font-weight: 500;
 }
 
 /* Increase contrast for interactive elements in dark mode */
