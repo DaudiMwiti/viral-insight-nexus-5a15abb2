@@ -5,6 +5,9 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export const runInsightFlow = async (params: InsightParams): Promise<InsightDataType> => {
   try {
+    console.log('Calling API endpoint:', `${API_BASE_URL}/run-flow`);
+    console.log('Request parameters:', params);
+    
     const response = await fetch(`${API_BASE_URL}/run-flow`, {
       method: 'POST',
       headers: {
@@ -20,10 +23,12 @@ export const runInsightFlow = async (params: InsightParams): Promise<InsightData
 
     if (!response.ok) {
       const errorData = await response.json();
+      console.error('API Error Response:', errorData);
       throw new Error(errorData.detail || 'Failed to run insight flow');
     }
 
     const responseData = await response.json();
+    console.log('API Response Data:', responseData);
     
     // Transform the FastAPI response format to match the frontend's expected format
     return transformResponseToFrontendFormat(responseData);
@@ -37,6 +42,7 @@ export const runInsightFlow = async (params: InsightParams): Promise<InsightData
  * Transform the FastAPI response to match the frontend's expected InsightDataType format
  */
 const transformResponseToFrontendFormat = (response: any): InsightDataType => {
+  console.log('Transforming API response...');
   const insights = [];
   const platformData: Record<string, any> = {};
   const platformChartData: Record<string, any> = {};
@@ -100,6 +106,8 @@ const transformResponseToFrontendFormat = (response: any): InsightDataType => {
     sentiment: response.summary.dominantSentiment.toLowerCase(),
     platform: Object.keys(response.platforms)[0]
   }];
+  
+  console.log('Transformation complete');
   
   return {
     insights,

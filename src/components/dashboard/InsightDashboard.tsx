@@ -44,6 +44,28 @@ const InsightDashboard: React.FC<InsightDashboardProps> = ({
   const insightsRef = useRef<HTMLDivElement>(null);
   const chartsRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    // When component mounts, check connection to backend
+    const checkBackendConnection = async () => {
+      try {
+        console.log('Checking backend connection...');
+        const response = await fetch('http://localhost:8000/');
+        if (response.ok) {
+          toast.success('Connected to backend server');
+          console.log('Backend connection successful');
+        } else {
+          toast.error('Backend server is running but returned an error');
+          console.error('Backend error:', await response.text());
+        }
+      } catch (error) {
+        console.error('Backend connection failed:', error);
+        toast.error('Could not connect to backend server. Check console for details.');
+      }
+    };
+    
+    checkBackendConnection();
+  }, []);
+
   // Connect the local state to the parent state
   useEffect(() => {
     setLocalRealtimeEnabled(realtimeEnabled);
@@ -86,7 +108,7 @@ const InsightDashboard: React.FC<InsightDashboardProps> = ({
       <section className="flex flex-col items-center justify-center h-[80vh]" aria-label="Error State">
         <div className="bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-300 p-4 rounded-lg mb-4" role="alert">
           <h2 className="text-xl font-medium">Error processing insights</h2>
-          <p>{error.message}</p>
+          <p>{(error as Error).message}</p>
         </div>
         <Button variant="outline" onClick={handleRetry}>
           <RefreshCw className="mr-2 h-4 w-4" aria-hidden="true" />
