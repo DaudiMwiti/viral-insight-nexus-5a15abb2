@@ -50,10 +50,22 @@ const InsightCards = ({ insights, platform }: InsightCardsProps) => {
     }
   };
 
+  const getSentimentClass = (sentiment: string) => {
+    switch (sentiment) {
+      case 'positive':
+        return 'bg-green-50 border-green-200';
+      case 'negative':
+        return 'bg-red-50 border-red-200';
+      case 'neutral':
+      default:
+        return 'bg-blue-50 border-blue-200';
+    }
+  };
+
   return (
     <>
       {displayInsights.map(insight => (
-        <Card key={insight.id} className="overflow-hidden">
+        <Card key={insight.id} className={`overflow-hidden ${getSentimentClass(insight.sentiment)}`}>
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-lg">
               {getSentimentIcon(insight.sentiment)}

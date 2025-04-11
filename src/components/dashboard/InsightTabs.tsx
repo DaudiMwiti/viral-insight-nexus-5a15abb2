@@ -1,12 +1,16 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Loader2 } from 'lucide-react';
 import { PlatformIcon } from '@/components/icons/PlatformIcons';
 import InsightCards from './InsightCards';
 import InsightCharts from './InsightCharts';
 import { InsightDataType, PlatformInsightType } from '@/types/insight';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface InsightTabsProps {
   data: InsightDataType | null;
@@ -14,41 +18,128 @@ interface InsightTabsProps {
 }
 
 const InsightTabs: React.FC<InsightTabsProps> = ({ data, selectedPlatforms }) => {
+  // States
+  const [activeTab, setActiveTab] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  
   // If no platforms selected, default to twitter
   const platforms = selectedPlatforms.length > 0 ? selectedPlatforms : ['twitter'];
   
+  // Set initial active tab if not set yet
+  React.useEffect(() => {
+    if (!activeTab && platforms.length > 0) {
+      setActiveTab(platforms[0]);
+    }
+  }, [platforms, activeTab]);
+  
+  const handleTabChange = (value: string) => {
+    setIsLoading(true);
+    setActiveTab(value);
+    
+    // Simulate loading
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+  };
+  
+  const showPromptPreview = () => {
+    // For development purposes only - show what would be sent to the backend
+    const previewData = {
+      platforms: selectedPlatforms,
+      timeRange: "7d",
+      tones: ["professional", "concise"],
+      agentPreset: "standard"
+    };
+    
+    toast.info("Agent Prompt Preview", {
+      description: <pre className="text-xs mt-2 p-2 bg-gray-100 rounded">
+        {JSON.stringify(previewData, null, 2)}
+      </pre>,
+      duration: 10000,
+    });
+  };
+  
   return (
-    <Tabs defaultValue={platforms[0]} className="w-full">
-      <TabsList className="mb-8 flex flex-wrap">
-        {platforms.map(platform => (
-          <TabsTrigger key={platform} value={platform} className="flex items-center gap-2">
-            <PlatformIcon platform={platform} size={16} />
-            <span className="capitalize">{getPlatformDisplayName(platform)}</span>
-          </TabsTrigger>
-        ))}
-      </TabsList>
+    <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+      <div className="relative">
+        <ScrollArea className="w-full pb-4">
+          <TabsList className="mb-8 flex w-max">
+            {platforms.map(platform => (
+              <TabsTrigger key={platform} value={platform} className="flex items-center gap-2">
+                <PlatformIcon platform={platform} size={16} />
+                <span className="capitalize">{getPlatformDisplayName(platform)}</span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </ScrollArea>
+        
+        {/* Development mode preview button */}
+        <div className="absolute right-0 top-0">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={showPromptPreview}
+            className="text-xs text-muted-foreground"
+          >
+            View Prompt →
+          </Button>
+        </div>
+      </div>
       
       {platforms.map(platform => (
         <TabsContent key={platform} value={platform}>
-          <div className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-              <InsightCards 
-                insights={getPlatformInsights(data, platform)} 
-                platform={platform}
+          {isLoading ? (
+            <LoadingState />
+          ) : (
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <InsightCards 
+                  insights={getPlatformInsights(data, platform)} 
+                  platform={platform}
+                />
+              </div>
+              
+              <InsightCharts 
+                data={getPlatformChartData(data, platform)} 
               />
+              
+              {renderPlatformContent(data, platform)}
             </div>
-            
-            <InsightCharts 
-              data={getPlatformChartData(data, platform)} 
-            />
-            
-            {renderPlatformContent(data, platform)}
-          </div>
+          )}
         </TabsContent>
       ))}
     </Tabs>
   );
 };
+
+// Loading state component
+const LoadingState = () => (
+  <div className="space-y-8">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      {[1, 2, 3].map(i => (
+        <Card key={i} className="overflow-hidden">
+          <CardHeader className="pb-2">
+            <Skeleton className="h-6 w-3/4" />
+            <Skeleton className="h-4 w-1/4 mt-1" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-4 w-full mb-2" />
+            <Skeleton className="h-4 w-5/6 mb-2" />
+            <Skeleton className="h-4 w-4/6" />
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+    
+    <div className="space-y-4">
+      <Skeleton className="h-8 w-64 mb-4" />
+      <div className="grid grid-cols-1 gap-4">
+        <Skeleton className="h-[200px] w-full rounded-md" />
+        <Skeleton className="h-[200px] w-full rounded-md" />
+      </div>
+    </div>
+  </div>
+);
 
 // Helper function to get platform display name
 const getPlatformDisplayName = (platform: string): string => {
