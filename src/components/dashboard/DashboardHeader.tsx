@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { InsightDataType } from '@/types/insight';
 import { getPlatformDisplayName } from '@/lib/platformUtils';
 import ExportDropdown from './ExportDropdown';
+import RealtimeToggle from '@/components/controls/RealtimeToggle';
 
 interface DashboardHeaderProps {
   data: InsightDataType | null;
@@ -20,6 +21,9 @@ interface DashboardHeaderProps {
     start: Date;
     end: Date;
   };
+  realtimeEnabled?: boolean;
+  setRealtimeEnabled?: (enabled: boolean) => void;
+  hasNewInsights?: boolean;
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
@@ -31,7 +35,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   dateRange = {
     start: new Date(),
     end: new Date()
-  }
+  },
+  realtimeEnabled = true,
+  setRealtimeEnabled = () => {},
+  hasNewInsights = false
 }) => {
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -85,6 +92,14 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     return sentiment.charAt(0).toUpperCase() + sentiment.slice(1);
   };
 
+  // Handle realtime toggle
+  const handleRealtimeToggle = (enabled: boolean) => {
+    setRealtimeEnabled(enabled);
+    if (enabled) {
+      handleRefresh();
+    }
+  };
+
   return (
     <header className="mb-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
@@ -93,29 +108,39 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           <p className="text-muted-foreground mt-1">{formattedDateRange}</p>
         </div>
         
-        <div className="flex items-center mt-4 md:mt-0 space-x-2">
-          <p className="text-sm text-muted-foreground">
-            Last updated: {format(lastUpdated, 'MMM d, h:mm a')}
-          </p>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleRefresh}
-            disabled={isLoading || isRefreshing}
-            aria-label={isRefreshing ? "Refreshing data..." : "Refresh data"}
-          >
-            <motion.div
-              animate={isRefreshing ? { rotate: 360 } : { rotate: 0 }}
-              transition={{ duration: 1, ease: "easeInOut" }}
-              className="mr-2"
-              aria-hidden="true"
-            >
-              <RefreshCw className="h-4 w-4" />
-            </motion.div>
-            Refresh
-          </Button>
+        <div className="flex items-center mt-4 md:mt-0 space-x-4">
+          {/* Add realtime toggle */}
+          <RealtimeToggle 
+            enabled={realtimeEnabled}
+            onToggle={handleRealtimeToggle}
+            isUpdating={isLoading || isRefreshing}
+            hasNewData={hasNewInsights}
+          />
           
-          <ExportDropdown insightsRef={insightsRef} chartsRef={chartsRef} />
+          <div className="flex items-center space-x-2">
+            <p className="text-sm text-muted-foreground">
+              Last updated: {format(lastUpdated, 'MMM d, h:mm a')}
+            </p>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleRefresh}
+              disabled={isLoading || isRefreshing}
+              aria-label={isRefreshing ? "Refreshing data..." : "Refresh data"}
+            >
+              <motion.div
+                animate={isRefreshing ? { rotate: 360 } : { rotate: 0 }}
+                transition={{ duration: 1, ease: "easeInOut" }}
+                className="mr-2"
+                aria-hidden="true"
+              >
+                <RefreshCw className="h-4 w-4" />
+              </motion.div>
+              Refresh
+            </Button>
+            
+            <ExportDropdown insightsRef={insightsRef} chartsRef={chartsRef} />
+          </div>
         </div>
       </div>
 

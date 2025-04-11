@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Loader2, RefreshCw } from 'lucide-react';
@@ -8,22 +8,53 @@ import InsightTabs from './InsightTabs';
 import DashboardHeader from './DashboardHeader';
 import DashboardCharts from './DashboardCharts';
 import { toast } from 'sonner';
+import { AnimatePresence, motion } from 'framer-motion';
 
-const InsightDashboard = () => {
-  const [selectedView, setSelectedView] = useState('insights');
-  const { data, isLoading, error, refetch } = useInsightData();
-  const [selectedPlatforms, setSelectedPlatforms] = useState([
+interface InsightDashboardProps {
+  selectedPlatforms?: string[];
+  realtimeEnabled?: boolean;
+  setRealtimeEnabled?: (enabled: boolean) => void;
+}
+
+const InsightDashboard: React.FC<InsightDashboardProps> = ({
+  selectedPlatforms = [
     'twitter', 
     'reddit', 
     'linkedin', 
     'instagram', 
     'youtube', 
     'web'
-  ]);
-
+  ],
+  realtimeEnabled = true,
+  setRealtimeEnabled = () => {}
+}) => {
+  const [localRealtimeEnabled, setLocalRealtimeEnabled] = useState(realtimeEnabled);
+  const { 
+    data, 
+    isLoading, 
+    error, 
+    refetch, 
+    hasNewInsights,
+    setRealtimeEnabled: setHookRealtimeEnabled 
+  } = useInsightData(localRealtimeEnabled);
+  
+  const [selectedView, setSelectedView] = useState('insights');
+  
   // Create refs for export functionality
   const insightsRef = useRef<HTMLDivElement>(null);
   const chartsRef = useRef<HTMLDivElement>(null);
+
+  // Connect the local state to the parent state
+  useEffect(() => {
+    setLocalRealtimeEnabled(realtimeEnabled);
+  }, [realtimeEnabled]);
+
+  // Connect the local toggle to both the hook and parent state
+  const handleRealtimeToggle = (enabled: boolean) => {
+    setLocalRealtimeEnabled(enabled);
+    setHookRealtimeEnabled(enabled);
+    setRealtimeEnabled(enabled);
+  };
 
   const handleRetry = () => {
     toast.info("Retrying data fetch...");
@@ -40,7 +71,7 @@ const InsightDashboard = () => {
     end: today
   };
 
-  if (isLoading) {
+  if (isLoading && !data) {
     return (
       <section className="flex flex-col items-center justify-center h-[80vh]" aria-label="Loading State">
         <Loader2 className="h-12 w-12 text-primary animate-spin mb-4" aria-hidden="true" />
@@ -66,47 +97,58 @@ const InsightDashboard = () => {
   }
 
   return (
-    <section aria-label="Insights Dashboard">
-      <DashboardHeader 
-        data={data} 
-        isLoading={isLoading} 
-        onRefresh={refetch} 
-        dateRange={dateRange}
-        insightsRef={insightsRef}
-        chartsRef={chartsRef}
-      />
+    <AnimatePresence mode="wait">
+      <motion.section 
+        aria-label="Insights Dashboard"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <DashboardHeader 
+          data={data} 
+          isLoading={isLoading} 
+          onRefresh={refetch} 
+          dateRange={dateRange}
+          insightsRef={insightsRef}
+          chartsRef={chartsRef}
+          realtimeEnabled={localRealtimeEnabled}
+          setRealtimeEnabled={handleRealtimeToggle}
+          hasNewInsights={hasNewInsights}
+        />
 
-      <Tabs defaultValue="insights" className="w-full">
-        <TabsList className="mb-8" aria-label="View options">
-          <TabsTrigger value="insights">Generated Insights</TabsTrigger>
-          <TabsTrigger value="raw">Raw Data</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="insights">
-          <div ref={insightsRef}>
-            <InsightTabs 
-              data={data} 
-              selectedPlatforms={selectedPlatforms}
-            />
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="raw">
-          <div className="grid grid-cols-1 gap-6">
-            <section aria-label="Raw JSON Data">
-              <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-auto max-h-[600px]" tabIndex={0}>
-                {JSON.stringify(data?.rawData, null, 2)}
-              </pre>
-            </section>
-          </div>
-        </TabsContent>
-      </Tabs>
+        <Tabs defaultValue="insights" className="w-full">
+          <TabsList className="mb-8" aria-label="View options">
+            <TabsTrigger value="insights">Generated Insights</TabsTrigger>
+            <TabsTrigger value="raw">Raw Data</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="insights">
+            <div ref={insightsRef}>
+              <InsightTabs 
+                data={data} 
+                selectedPlatforms={selectedPlatforms}
+              />
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="raw">
+            <div className="grid grid-cols-1 gap-6">
+              <section aria-label="Raw JSON Data">
+                <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-auto max-h-[600px]" tabIndex={0}>
+                  {JSON.stringify(data?.rawData, null, 2)}
+                </pre>
+              </section>
+            </div>
+          </TabsContent>
+        </Tabs>
 
-      <div ref={chartsRef} className="mt-6">
-        {/* Charts container for export purposes */}
-        {data && <DashboardCharts data={data} />}
-      </div>
-    </section>
+        <div ref={chartsRef} className="mt-6">
+          {/* Charts container for export purposes */}
+          {data && <DashboardCharts data={data} />}
+        </div>
+      </motion.section>
+    </AnimatePresence>
   );
 };
 

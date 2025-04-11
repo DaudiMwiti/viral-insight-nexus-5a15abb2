@@ -17,12 +17,17 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     'youtube', 
     'web'
   ]);
+  
+  // Add realtime state to be passed to children
+  const [realtimeEnabled, setRealtimeEnabled] = useState(true);
 
-  // Pass selected platforms to the child components
+  // Pass selected platforms and realtime state to the child components
   const childrenWithProps = React.Children.map(children, child => {
     if (React.isValidElement(child)) {
       return React.cloneElement(child as React.ReactElement<any>, { 
-        selectedPlatforms 
+        selectedPlatforms,
+        realtimeEnabled,
+        setRealtimeEnabled
       });
     }
     return child;
