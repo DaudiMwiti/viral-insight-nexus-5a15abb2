@@ -88,7 +88,9 @@ const DashboardCharts = ({ data, platform }: DashboardChartsProps) => {
           <p className="font-medium">{label}</p>
           {payload.map((entry: any, index: number) => (
             <p key={index} style={{ color: entry.color }}>
-              {entry.name}: {entry.value}%
+              {entry.name}: {typeof entry.value === 'number' 
+                ? `${entry.value.toFixed(0)}%` 
+                : `${entry.value}%`}
             </p>
           ))}
         </div>
@@ -201,7 +203,7 @@ const DashboardCharts = ({ data, platform }: DashboardChartsProps) => {
                 innerRadius={60}
                 fill="#8884d8"
                 dataKey="value"
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                label={({ name, percent }) => `${name} ${typeof percent === 'number' ? (percent * 100).toFixed(0) : parseInt(String(percent * 100))}%`}
               >
                 {platformEngagementData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
@@ -279,7 +281,9 @@ const DashboardCharts = ({ data, platform }: DashboardChartsProps) => {
                       if (active && payload && payload.length) {
                         return (
                           <div className="bg-white p-2 border rounded shadow-sm text-xs">
-                            <span>{payload[0].value?.toFixed(0)}</span>
+                            <span>{typeof payload[0].value === 'number' 
+                              ? payload[0].value.toFixed(0) 
+                              : parseInt(String(payload[0].value))}</span>
                           </div>
                         );
                       }
