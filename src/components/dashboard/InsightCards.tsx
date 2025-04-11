@@ -5,7 +5,7 @@ import { TrendingUp, TrendingDown, Minus, Bookmark } from 'lucide-react';
 import { PlatformIcon } from '@/components/icons/PlatformIcons';
 import { InsightType } from '@/types/insight';
 import { motion } from 'framer-motion';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 interface InsightCardsProps {
@@ -94,63 +94,61 @@ const InsightCards = ({ insights, platform }: InsightCardsProps) => {
             ease: "easeOut" 
           }}
         >
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Card 
-                  className={cn(
-                    `overflow-hidden ${getSentimentClass(insight.sentiment)}`,
-                    "relative transition-all duration-200 ease-in-out hover:shadow-lg hover:translate-y-[-2px]"
-                  )}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Card 
+                className={cn(
+                  `overflow-hidden ${getSentimentClass(insight.sentiment)}`,
+                  "relative transition-all duration-200 ease-in-out hover:shadow-lg hover:translate-y-[-2px]"
+                )}
+              >
+                <div 
+                  className="absolute top-3 right-3 z-10 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleBookmark(insight.id);
+                  }}
                 >
-                  <div 
-                    className="absolute top-3 right-3 z-10 cursor-pointer"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleBookmark(insight.id);
-                    }}
-                  >
-                    <Bookmark 
-                      className={cn(
-                        "h-5 w-5 transition-all duration-200",
-                        bookmarkedInsights.has(insight.id) 
-                          ? "fill-primary text-primary" 
-                          : "text-muted-foreground hover:text-primary"
-                      )}
-                    />
-                  </div>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                      {getSentimentIcon(insight.sentiment)}
-                      <span>{insight.title}</span>
-                    </CardTitle>
-                    {platform && (
-                      <div className="flex items-center text-xs text-muted-foreground mt-1">
-                        <PlatformIcon platform={insight.platform || platform} size={12} className="mr-1" />
-                        <span>{new Date(insight.timestamp).toLocaleDateString()}</span>
-                      </div>
+                  <Bookmark 
+                    className={cn(
+                      "h-5 w-5 transition-all duration-200",
+                      bookmarkedInsights.has(insight.id) 
+                        ? "fill-primary text-primary" 
+                        : "text-muted-foreground hover:text-primary"
                     )}
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">{insight.description}</p>
-                  </CardContent>
-                </Card>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="p-3 max-w-xs">
-                <div className="space-y-1">
-                  <p className="font-medium text-sm">
-                    Source: {insight.platform || platform}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Confidence: {Math.floor(70 + Math.random() * 30)}%
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Generated: {new Date(insight.timestamp).toLocaleString()}
-                  </p>
+                  />
                 </div>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+                <CardHeader className="pb-2">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    {getSentimentIcon(insight.sentiment)}
+                    <span>{insight.title}</span>
+                  </CardTitle>
+                  {platform && (
+                    <div className="flex items-center text-xs text-muted-foreground mt-1">
+                      <PlatformIcon platform={insight.platform || platform} size={12} className="mr-1" />
+                      <span>{new Date(insight.timestamp).toLocaleDateString()}</span>
+                    </div>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">{insight.description}</p>
+                </CardContent>
+              </Card>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="p-3 max-w-xs">
+              <div className="space-y-1">
+                <p className="font-medium text-sm">
+                  Source: {insight.platform || platform}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Confidence: {Math.floor(70 + Math.random() * 30)}%
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Generated: {new Date(insight.timestamp).toLocaleString()}
+                </p>
+              </div>
+            </TooltipContent>
+          </Tooltip>
         </motion.div>
       ))}
     </>

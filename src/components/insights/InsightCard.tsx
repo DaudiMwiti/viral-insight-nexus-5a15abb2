@@ -4,6 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { InsightType } from '@/types/insight';
 import { cn } from '@/lib/utils';
 import { EngagementFilter } from './InsightFilters';
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipTrigger 
+} from '@/components/ui/tooltip';
+import { Badge } from '@/components/ui/badge';
 
 interface InsightCardProps {
   insight: InsightType;
@@ -44,12 +50,12 @@ const InsightCard: React.FC<InsightCardProps> = ({ insight, className }) => {
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <CardTitle className="text-base">{insight.title}</CardTitle>
-          <span className={cn(
-            "text-xs px-2 py-1 rounded-full",
+          <Badge className={cn(
+            "rounded-full text-xs px-2 py-1",
             getSentimentColor(insight.sentiment)
           )}>
             {insight.sentiment.charAt(0).toUpperCase() + insight.sentiment.slice(1)}
-          </span>
+          </Badge>
         </div>
         <CardDescription className="text-xs">
           {new Date(insight.timestamp).toLocaleDateString()}
