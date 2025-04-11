@@ -61,4 +61,5 @@ export interface InsightParams {
   preset: string;
   tone: string;
   date: string;
+  dateRange?: string; // Added this property to match what's being used in the API
 }

@@ -14,7 +14,7 @@ export const runInsightFlow = async (params: InsightParams): Promise<InsightData
         platforms: params.platforms || ['twitter'],
         preset: params.preset || 'standard',
         tone: params.tone || 'professional',
-        dateRange: params.dateRange || '2025-04-01 to 2025-04-11'
+        dateRange: params.date || '2025-04-01 to 2025-04-11'
       }),
     });
 
@@ -42,7 +42,7 @@ const transformResponseToFrontendFormat = (response: any): InsightDataType => {
   const platformChartData: Record<string, any> = {};
   
   // Process each platform's data
-  for (const [platform, data] of Object.entries(response.platforms)) {
+  for (const [platform, data] of Object.entries<any>(response.platforms)) {
     const platformInsights = data.insights.map((insight: any) => ({
       id: Math.random().toString(36).substring(2, 11),
       title: insight.title,
@@ -59,7 +59,7 @@ const transformResponseToFrontendFormat = (response: any): InsightDataType => {
     platformData[platform] = {
       post_title: `${platform.charAt(0).toUpperCase() + platform.slice(1)} Insights`,
       post_link: `https://${platform}.com/insights`,
-      content_lines: platformInsights.map(i => i.description)
+      content_lines: platformInsights.map((i: any) => i.description)
     };
     
     // Process chart data
@@ -108,7 +108,7 @@ const transformResponseToFrontendFormat = (response: any): InsightDataType => {
     rawData: {
       platform: Object.keys(response.platforms)[0],
       query: "Analysis",
-      results: insights.map(i => ({ id: i.id, text: i.description, sentiment: i.sentiment }))
+      results: insights.map((i: any) => ({ id: i.id, text: i.description, sentiment: i.sentiment }))
     },
     platformData,
     platformChartData
