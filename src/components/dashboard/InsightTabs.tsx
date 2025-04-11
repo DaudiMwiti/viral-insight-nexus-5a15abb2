@@ -1,20 +1,15 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ExternalLink } from 'lucide-react';
-import { PlatformIcon } from '@/components/icons/PlatformIcons';
-import InsightCards from './InsightCards';
-import InsightCharts from './InsightCharts';
-import DashboardCharts from './DashboardCharts';
-import { InsightDataType } from '@/types/insight';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import PlatformTabs from './PlatformTabs';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getPlatformDisplayName } from '@/lib/platformUtils';
 import PromptPreview from '@/components/controls/PromptPreview';
+import { InsightDataType } from '@/types/insight';
+import InsightCharts from './InsightCharts';
+import DashboardCharts from './DashboardCharts';
+import PlatformSection from '../insights/PlatformSection';
 
 interface InsightTabsProps {
   data: InsightDataType | null;
@@ -27,7 +22,7 @@ const InsightTabs: React.FC<InsightTabsProps> = ({ data, selectedPlatforms }) =>
   
   const platforms = selectedPlatforms.length > 0 ? selectedPlatforms : ['twitter'];
   
-  React.useEffect(() => {
+  useEffect(() => {
     if (!activeTab && platforms.length > 0) {
       setActiveTab(platforms[0]);
     }
@@ -75,12 +70,11 @@ const InsightTabs: React.FC<InsightTabsProps> = ({ data, selectedPlatforms }) =>
                   <LoadingState />
                 ) : (
                   <div className="space-y-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                      <InsightCards 
-                        insights={getPlatformInsights(data, platform)} 
-                        platform={platform}
-                      />
-                    </div>
+                    <PlatformSection 
+                      platform={platform}
+                      insights={getPlatformInsights(data, platform)}
+                      platformData={data?.platformData?.[platform]}
+                    />
                     
                     {/* Legacy charts - can be replaced or kept as basic overview */}
                     <InsightCharts 
@@ -92,8 +86,6 @@ const InsightTabs: React.FC<InsightTabsProps> = ({ data, selectedPlatforms }) =>
                       data={data} 
                       platform={platform}
                     />
-                    
-                    {renderPlatformContent(data, platform)}
                   </div>
                 )}
               </TabsContent>
@@ -109,17 +101,7 @@ const LoadingState = () => (
   <div className="space-y-8">
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
       {[1, 2, 3].map(i => (
-        <Card key={i} className="overflow-hidden">
-          <CardHeader className="pb-2">
-            <Skeleton className="h-6 w-3/4" />
-            <Skeleton className="h-4 w-1/4 mt-1" />
-          </CardHeader>
-          <CardContent>
-            <Skeleton className="h-4 w-full mb-2" />
-            <Skeleton className="h-4 w-5/6 mb-2" />
-            <Skeleton className="h-4 w-4/6" />
-          </CardContent>
-        </Card>
+        <Skeleton key={i} className="h-[180px] w-full rounded-md" />
       ))}
     </div>
     
@@ -149,56 +131,6 @@ const getPlatformChartData = (data: InsightDataType | null, platform: string) =>
   }
   
   return data.chartData;
-};
-
-const renderPlatformContent = (data: InsightDataType | null, platform: string) => {
-  if (!data) return null;
-  
-  const platformData = data.platformData?.[platform];
-  if (!platformData || platformData.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>No {getPlatformDisplayName(platform)} Data</CardTitle>
-          <CardDescription>No posts or articles found for this platform.</CardDescription>
-        </CardHeader>
-      </Card>
-    );
-  }
-  
-  return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-medium">Top Posts & Content</h3>
-      {platformData.map((item, index) => (
-        <Card key={index} className="overflow-hidden">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center justify-between">
-              <span>{item.post_title || 'Untitled Post'}</span>
-              {item.post_link && (
-                <a 
-                  href={item.post_link} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 inline-flex items-center"
-                >
-                  <ExternalLink size={16} className="ml-1" />
-                </a>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {item.content_lines.map((line, lineIndex) => (
-                <p key={lineIndex} className="text-sm text-muted-foreground">
-                  {line}
-                </p>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
 };
 
 export default InsightTabs;
