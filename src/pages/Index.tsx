@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -12,7 +13,7 @@ const Index = () => {
   const navigate = useNavigate();
 
   const handleEnterDashboard = () => {
-    navigate('/insights');
+    navigate('/dashboard');
   };
 
   // Container animation for staggered children

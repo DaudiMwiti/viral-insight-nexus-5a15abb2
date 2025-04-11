@@ -8,7 +8,7 @@ const Comparison = () => {
   return (
     <AppLayout>
       <div className="container mx-auto py-6">
-        <h1 className="text-2xl font-bold mb-6">Insight Comparison</h1>
+        <h1 className="text-2xl font-bold mb-6">Platform Comparison</h1>
         <ComparisonView targetOptions={[...platformOptions, ...timeOptions]} />
       </div>
     </AppLayout>

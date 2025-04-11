@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, BarChartHorizontal, Sparkles, AlertCircle } from 'lucide-react';
+import { LayoutDashboard, BarChartHorizontal, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import PlatformSelector from '@/components/controls/PlatformSelector';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
@@ -80,17 +80,9 @@ const Sidebar: React.FC<SidebarProps> = ({ onPlatformsChange }) => {
       <div className="p-4">
         <nav className="grid gap-1" aria-label="Primary navigation">
           <SidebarLink 
-            to="/" 
-            label="Landing Page"
-            tooltip="Return to the main landing page"
-          >
-            <LayoutDashboard className="h-5 w-5" aria-hidden="true" />
-            <span>Landing Page</span>
-          </SidebarLink>
-          <SidebarLink 
-            to="/insights" 
+            to="/dashboard" 
             label="Dashboard"
-            tooltip="Go to the main dashboard"
+            tooltip="View your insights dashboard"
           >
             <LayoutDashboard className="h-5 w-5" aria-hidden="true" />
             <span>Dashboard</span>
@@ -102,14 +94,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onPlatformsChange }) => {
           >
             <BarChartHorizontal className="h-5 w-5" aria-hidden="true" />
             <span>Compare Platforms</span>
-          </SidebarLink>
-          <SidebarLink 
-            to="/insights" 
-            label="AI-Generated Insights"
-            tooltip="Explore AI-powered insights and analysis"
-          >
-            <Sparkles className="h-5 w-5" aria-hidden="true" />
-            <span>AI-Generated Insights</span>
           </SidebarLink>
           <SidebarLink 
             to="/alerts" 
