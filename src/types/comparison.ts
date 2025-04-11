@@ -7,6 +7,9 @@ export interface ComparisonOption {
   id: string;
   name: string;
   type: ComparisonTarget;
+  platformId?: string; // Made optional for platform-specific options
+  startDate?: string;  // Made optional for time-specific options  
+  endDate?: string;    // Made optional for time-specific options
 }
 
 export interface PlatformComparisonOption extends ComparisonOption {

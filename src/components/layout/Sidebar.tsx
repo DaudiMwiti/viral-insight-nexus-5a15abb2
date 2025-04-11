@@ -3,10 +3,15 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { BarChart3, BarChart2, CheckCheck, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import PlatformSelector from '@/components/controls/PlatformSelector';
 
 interface SidebarLinkProps {
   to: string;
   children: React.ReactNode;
+}
+
+interface SidebarProps {
+  onPlatformsChange?: (platforms: string[]) => void;
 }
 
 const SidebarLink: React.FC<SidebarLinkProps> = ({ to, children }) => {
@@ -27,7 +32,23 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({ to, children }) => {
   );
 };
 
-const Sidebar = () => {
+const Sidebar: React.FC<SidebarProps> = ({ onPlatformsChange }) => {
+  const [selectedPlatforms, setSelectedPlatforms] = React.useState([
+    'twitter', 
+    'reddit', 
+    'linkedin', 
+    'instagram', 
+    'youtube', 
+    'web'
+  ]);
+
+  // When selectedPlatforms changes, call the passed callback
+  React.useEffect(() => {
+    if (onPlatformsChange) {
+      onPlatformsChange(selectedPlatforms);
+    }
+  }, [selectedPlatforms, onPlatformsChange]);
+
   return (
     <div className="h-screen w-64 border-r border-sidebar-border bg-sidebar-background text-sidebar-foreground">
       <div className="flex h-14 items-center border-b border-sidebar-border px-4">
@@ -52,6 +73,15 @@ const Sidebar = () => {
             <span>Alerts</span>
           </SidebarLink>
         </nav>
+
+        <div className="mt-6">
+          {onPlatformsChange && (
+            <PlatformSelector 
+              selectedPlatforms={selectedPlatforms} 
+              onPlatformsChange={setSelectedPlatforms} 
+            />
+          )}
+        </div>
       </div>
     </div>
   );

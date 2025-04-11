@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { ComparisonData, ComparisonOption } from '@/types/comparison';
+import { ComparisonData, ComparisonOption, PlatformComparisonOption, TimeComparisonOption } from '@/types/comparison';
 import { useQuery } from '@tanstack/react-query';
 
 // Mock data for demonstration purposes
@@ -69,22 +69,22 @@ const generateMockComparisonData = (targetA: string, targetB: string): Compariso
 };
 
 // Mock comparison options
-export const platformOptions: ComparisonOption[] = [
+export const platformOptions: PlatformComparisonOption[] = [
   { id: 'twitter', name: 'X (Twitter)', type: 'platform', platformId: 'twitter' },
   { id: 'reddit', name: 'Reddit', type: 'platform', platformId: 'reddit' },
   { id: 'linkedin', name: 'LinkedIn', type: 'platform', platformId: 'linkedin' },
   { id: 'instagram', name: 'Instagram', type: 'platform', platformId: 'instagram' },
   { id: 'youtube', name: 'YouTube', type: 'platform', platformId: 'youtube' },
   { id: 'web', name: 'Web Articles', type: 'platform', platformId: 'web' }
-] as ComparisonOption[];
+];
 
-export const timeOptions: ComparisonOption[] = [
+export const timeOptions: TimeComparisonOption[] = [
   { id: 'current-week', name: 'Current Week', type: 'time', startDate: '2023-01-01', endDate: '2023-01-07' },
   { id: 'last-week', name: 'Last Week', type: 'time', startDate: '2022-12-25', endDate: '2022-12-31' },
   { id: 'two-weeks-ago', name: 'Two Weeks Ago', type: 'time', startDate: '2022-12-18', endDate: '2022-12-24' },
   { id: 'this-month', name: 'This Month', type: 'time', startDate: '2023-01-01', endDate: '2023-01-31' },
   { id: 'last-month', name: 'Last Month', type: 'time', startDate: '2022-12-01', endDate: '2022-12-31' }
-] as ComparisonOption[];
+];
 
 export const useComparisonData = (targetA: string, targetB: string) => {
   const fetchComparisonData = async () => {

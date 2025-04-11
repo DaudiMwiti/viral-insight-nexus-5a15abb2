@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ComparisonViewProps, ComparisonOption } from '@/types/comparison';
+import { ComparisonViewProps, ComparisonOption, PlatformComparisonOption, TimeComparisonOption } from '@/types/comparison';
 import { useComparisonData, platformOptions, timeOptions } from '@/hooks/useComparisonData';
 import ComparisonMetricCard from './ComparisonMetricCard';
 import TopicsComparison from './TopicsComparison';
