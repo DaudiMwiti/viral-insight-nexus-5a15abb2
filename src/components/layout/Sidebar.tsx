@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { BarChart3, BarChart2, CheckCheck, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import PlatformSelector from '@/components/controls/PlatformSelector';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
 interface SidebarLinkProps {
   to: string;
@@ -51,8 +52,9 @@ const Sidebar: React.FC<SidebarProps> = ({ onPlatformsChange }) => {
 
   return (
     <div className="h-screen w-64 border-r border-sidebar-border bg-sidebar-background text-sidebar-foreground">
-      <div className="flex h-14 items-center border-b border-sidebar-border px-4">
+      <div className="flex h-14 items-center justify-between border-b border-sidebar-border px-4">
         <h1 className="text-xl font-semibold">Insight AI</h1>
+        <ThemeToggle />
       </div>
       <div className="p-4">
         <nav className="grid gap-1">

@@ -91,14 +91,14 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-300;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
 @layer components {
   .insight-card {
-    @apply bg-white rounded-lg shadow-sm border border-gray-100 p-4 transition-all duration-200 hover:shadow-md;
+    @apply bg-white dark:bg-card rounded-lg shadow-sm border border-gray-100 dark:border-gray-800 p-4 transition-all duration-200 hover:shadow-md;
   }
   
   .insight-card-header {

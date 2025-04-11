@@ -9,6 +9,7 @@ import Comparison from "./pages/Comparison";
 import Insights from "./pages/Insights";
 import Alerts from "./pages/Alerts";
 import NotFound from "./pages/NotFound";
+import { ThemeProvider } from "./components/theme/ThemeProvider";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,21 +22,23 @@ const queryClient = new QueryClient({
 
 const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner position="top-right" />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/comparison" element={<Comparison />} />
-            <Route path="/insights" element={<Insights />} />
-            <Route path="/alerts" element={<Alerts />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </TooltipProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <ThemeProvider defaultTheme="system" storageKey="insight-ai-theme">
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner position="top-right" />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/comparison" element={<Comparison />} />
+              <Route path="/insights" element={<Insights />} />
+              <Route path="/alerts" element={<Alerts />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </TooltipProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 };
 
