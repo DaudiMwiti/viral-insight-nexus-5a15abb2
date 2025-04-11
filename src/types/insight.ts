@@ -34,6 +34,19 @@ export interface PlatformInsightType {
   content_lines: string[];
 }
 
+export interface TrendDataPoint {
+  date: string;
+  positive: number;
+  neutral: number;
+  negative: number;
+}
+
+export interface PlatformEngagementDataPoint {
+  name: string;
+  value: number;
+  color: string;
+}
+
 export interface InsightDataType {
   insights: InsightType[];
   threadOutput: ThreadType[];

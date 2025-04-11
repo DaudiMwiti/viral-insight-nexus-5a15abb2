@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,6 +6,7 @@ import { ExternalLink } from 'lucide-react';
 import { PlatformIcon } from '@/components/icons/PlatformIcons';
 import InsightCards from './InsightCards';
 import InsightCharts from './InsightCharts';
+import DashboardCharts from './DashboardCharts';
 import { InsightDataType } from '@/types/insight';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -99,8 +101,15 @@ const InsightTabs: React.FC<InsightTabsProps> = ({ data, selectedPlatforms }) =>
                       />
                     </div>
                     
+                    {/* Legacy charts - can be replaced or kept as basic overview */}
                     <InsightCharts 
                       data={getPlatformChartData(data, platform)} 
+                    />
+                    
+                    {/* New enhanced charts */}
+                    <DashboardCharts 
+                      data={data} 
+                      platform={platform}
                     />
                     
                     {renderPlatformContent(data, platform)}
