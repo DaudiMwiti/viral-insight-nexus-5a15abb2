@@ -8,11 +8,14 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { InsightDataType } from '@/types/insight';
 import { getPlatformDisplayName } from '@/lib/platformUtils';
+import ExportDropdown from './ExportDropdown';
 
 interface DashboardHeaderProps {
   data: InsightDataType | null;
   isLoading: boolean;
   onRefresh: () => void;
+  insightsRef: React.RefObject<HTMLDivElement>;
+  chartsRef: React.RefObject<HTMLDivElement>;
   dateRange?: {
     start: Date;
     end: Date;
@@ -23,6 +26,8 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   data,
   isLoading,
   onRefresh,
+  insightsRef,
+  chartsRef,
   dateRange = {
     start: new Date(),
     end: new Date()
@@ -107,6 +112,8 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             </motion.div>
             Refresh
           </Button>
+          
+          <ExportDropdown insightsRef={insightsRef} chartsRef={chartsRef} />
         </div>
       </div>
 

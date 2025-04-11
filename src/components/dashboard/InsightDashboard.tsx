@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Loader2, RefreshCw } from 'lucide-react';
 import { useInsightData } from '@/hooks/useInsightData';
 import InsightTabs from './InsightTabs';
 import DashboardHeader from './DashboardHeader';
+import DashboardCharts from './DashboardCharts';
 import { toast } from 'sonner';
 
 const InsightDashboard = () => {
@@ -19,6 +20,10 @@ const InsightDashboard = () => {
     'youtube', 
     'web'
   ]);
+
+  // Create refs for export functionality
+  const insightsRef = useRef<HTMLDivElement>(null);
+  const chartsRef = useRef<HTMLDivElement>(null);
 
   const handleRetry = () => {
     toast.info("Retrying data fetch...");
@@ -67,6 +72,8 @@ const InsightDashboard = () => {
         isLoading={isLoading} 
         onRefresh={refetch} 
         dateRange={dateRange}
+        insightsRef={insightsRef}
+        chartsRef={chartsRef}
       />
 
       <Tabs defaultValue="insights" className="w-full">
@@ -76,10 +83,12 @@ const InsightDashboard = () => {
         </TabsList>
         
         <TabsContent value="insights">
-          <InsightTabs 
-            data={data} 
-            selectedPlatforms={selectedPlatforms}
-          />
+          <div ref={insightsRef}>
+            <InsightTabs 
+              data={data} 
+              selectedPlatforms={selectedPlatforms}
+            />
+          </div>
         </TabsContent>
         
         <TabsContent value="raw">
@@ -90,6 +99,11 @@ const InsightDashboard = () => {
           </div>
         </TabsContent>
       </Tabs>
+
+      <div ref={chartsRef} className="mt-6">
+        {/* Charts container for export purposes */}
+        {data && <DashboardCharts data={data} />}
+      </div>
     </div>
   );
 };
