@@ -81,11 +81,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onPlatformsChange }) => {
         <nav className="grid gap-1" aria-label="Primary navigation">
           <SidebarLink 
             to="/overview" 
-            label="Overview"
+            label="Homepage"
             tooltip="Get a high-level view of your analytics"
           >
             <LayoutDashboard className="h-5 w-5" aria-hidden="true" />
-            <span>Overview</span>
+            <span>Homepage</span>
           </SidebarLink>
           <SidebarLink 
             to="/comparison" 
