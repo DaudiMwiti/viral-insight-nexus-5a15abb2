@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Twitter, Globe, Linkedin, Instagram, Youtube, Alien } from 'lucide-react';
+import { Twitter, Globe, Linkedin, Instagram, Youtube } from 'lucide-react';
 
 export const TwitterIcon = Twitter;
 export const LinkedinIcon = Linkedin;
